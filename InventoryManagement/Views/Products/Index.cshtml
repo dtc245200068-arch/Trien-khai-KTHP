@@ -1,0 +1,369 @@
+@model IEnumerable<InventoryManagement.Models.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<style>
+    .product-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 10px 13px;
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+        background: white;
+        outline: none;
+        font-size: 13px;
+    }
+
+    .search-input {
+        width: 320px;
+    }
+
+    .filter-select {
+        width: 210px;
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+        border-color: #c96f32;
+    }
+
+    .btn-search,
+    .btn-add {
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .btn-search {
+        border: none;
+        background: #292524;
+        color: white;
+    }
+
+    .btn-add {
+        background: #c96f32;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background: #a65321;
+        color: white;
+    }
+
+    .product-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+        overflow-x: auto;
+    }
+
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1050px;
+    }
+
+    .product-table th {
+        padding: 13px 14px;
+        background: #fafaf9;
+        color: #78716c;
+        font-size: 10px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .product-table td {
+        padding: 14px;
+        border-top: 1px solid #f5f5f4;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .product-code {
+        color: #c96f32;
+        font-weight: 700;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: #292524;
+    }
+
+    .stock-normal,
+    .stock-low {
+        display: inline-block;
+        min-width: 40px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .stock-normal {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .stock-low {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .status-active,
+    .status-inactive {
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .status-inactive {
+        background: #f5f5f4;
+        color: #78716c;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-edit,
+    .btn-toggle {
+        padding: 6px 9px;
+        border: 1px solid #e7e5e4;
+        border-radius: 8px;
+        background: white;
+        color: #44403c;
+        text-decoration: none;
+        font-size: 11px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-edit:hover {
+        color: #c96f32;
+        border-color: #fed7aa;
+    }
+
+    .alert-success-custom {
+        padding: 12px 15px;
+        margin-bottom: 18px;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 13px;
+    }
+
+    .empty {
+        padding: 45px !important;
+        text-align: center;
+        color: #a8a29e;
+    }
+
+    .price {
+        white-space: nowrap;
+    }
+</style>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success-custom">
+        ✓ @TempData["Success"]
+    </div>
+}
+
+<div class="product-toolbar">
+
+    <form asp-action="Index"
+          method="get"
+          class="filter-form">
+
+        <input type="text"
+               name="search"
+               value="@ViewBag.Search"
+               class="search-input"
+               placeholder="Tìm mã hoặc tên sản phẩm..." />
+
+        <select name="categoryId"
+                asp-items="ViewBag.Categories"
+                class="filter-select">
+
+            <option value="">Tất cả danh mục</option>
+
+        </select>
+
+        <button type="submit"
+                class="btn-search">
+            Tìm kiếm
+        </button>
+
+    </form>
+
+    <a asp-action="Create"
+       class="btn-add">
+        + Thêm sản phẩm
+    </a>
+
+</div>
+
+<div class="product-card">
+
+    <table class="product-table">
+
+        <thead>
+            <tr>
+                <th>MÃ SP</th>
+                <th>TÊN SẢN PHẨM</th>
+                <th>DANH MỤC</th>
+                <th>ĐƠN VỊ</th>
+                <th>GIÁ NHẬP</th>
+                <th>GIÁ XUẤT</th>
+                <th>TỒN KHO</th>
+                <th>TỒN TỐI THIỂU</th>
+                <th>TRẠNG THÁI</th>
+                <th>THAO TÁC</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="10"
+                    class="empty">
+
+                    Chưa có sản phẩm nào.
+
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var product in Model)
+            {
+                <tr>
+
+                    <td class="product-code">
+                        @product.Code
+                    </td>
+
+                    <td class="product-name">
+                        @product.Name
+                    </td>
+
+                    <td>
+                        @(product.Category?.Name ?? "-")
+                    </td>
+
+                    <td>
+                        @product.Unit
+                    </td>
+
+                    <td class="price">
+                        @product.ImportPrice.ToString("N0") đ
+                    </td>
+
+                    <td class="price">
+                        @product.ExportPrice.ToString("N0") đ
+                    </td>
+
+                    <td>
+                        @if (product.Quantity <= product.MinimumStock)
+                        {
+                            <span class="stock-low">
+                                @product.Quantity
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="stock-normal">
+                                @product.Quantity
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        @product.MinimumStock
+                    </td>
+
+                    <td>
+                        @if (product.IsActive)
+                        {
+                            <span class="status-active">
+                                Đang sử dụng
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-inactive">
+                                Ngừng sử dụng
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+
+                        <div class="action-group">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@product.Id"
+                               class="btn-edit">
+                                Sửa
+                            </a>
+
+                            <form asp-action="ToggleStatus"
+                                  asp-route-id="@product.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn-toggle">
+
+                                    @(product.IsActive
+                                        ? "Ngừng dùng"
+                                        : "Kích hoạt")
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            }
+        }
+
+        </tbody>
+
+    </table>
+
+</div>

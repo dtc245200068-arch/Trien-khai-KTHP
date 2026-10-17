@@ -1,0 +1,284 @@
+@model InventoryManagement.Models.Product
+
+@{
+    ViewData["Title"] = "Cập nhật sản phẩm";
+}
+
+<style>
+    .product-form {
+        max-width: 900px;
+        margin: auto;
+        padding: 28px;
+
+        background: white;
+
+        border: 1px solid #e7e5e4;
+        border-radius: 18px;
+    }
+
+    .form-heading {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .form-note {
+        margin-bottom: 25px;
+        color: #78716c;
+        font-size: 12px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .form-group {
+        margin-bottom: 4px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .input {
+        width: 100%;
+        padding: 11px 13px;
+
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+
+        outline: none;
+        background: white;
+    }
+
+    .input:focus {
+        border-color: #c96f32;
+    }
+
+    .validation {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 11px;
+    }
+
+    .stock-info {
+        grid-column: 1 / -1;
+
+        padding: 13px 15px;
+        margin-top: 5px;
+
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+
+        background: #fff7ed;
+        color: #9a3412;
+
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+
+        margin-top: 25px;
+    }
+
+    .btn-back,
+    .btn-save {
+        padding: 10px 17px;
+        border-radius: 10px;
+
+        font-size: 13px;
+        font-weight: 700;
+
+        text-decoration: none;
+    }
+
+    .btn-back {
+        border: 1px solid #e7e5e4;
+        color: #57534e;
+    }
+
+    .btn-save {
+        border: none;
+        background: #c96f32;
+        color: white;
+    }
+</style>
+
+<div class="product-form">
+
+    <div class="form-heading">
+        Thông tin sản phẩm
+    </div>
+
+    <div class="form-note">
+        Cập nhật thông tin sản phẩm trong hệ thống.
+    </div>
+
+    <form asp-action="Edit"
+      method="post">
+
+    <input asp-for="Id" type="hidden" />
+
+        @Html.AntiForgeryToken()
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label asp-for="Code"
+                       class="form-label">
+                    Mã sản phẩm *
+                </label>
+
+                <input asp-for="Code"
+                       class="input"
+                       placeholder="Ví dụ: SP001" />
+
+                <span asp-validation-for="Code"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="Name"
+                       class="form-label">
+                    Tên sản phẩm *
+                </label>
+
+                <input asp-for="Name"
+                       class="input"
+                       placeholder="Nhập tên sản phẩm" />
+
+                <span asp-validation-for="Name"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="CategoryId"
+                       class="form-label">
+                    Danh mục *
+                </label>
+
+                <select asp-for="CategoryId"
+                        asp-items="ViewBag.Categories"
+                        class="input">
+
+                    <option value="">
+                        -- Chọn danh mục --
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="CategoryId"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="Unit"
+                       class="form-label">
+                    Đơn vị tính *
+                </label>
+
+                <input asp-for="Unit"
+                       class="input"
+                       placeholder="Cái, hộp, chiếc, kg..." />
+
+                <span asp-validation-for="Unit"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="ImportPrice"
+                       class="form-label">
+                    Giá nhập *
+                </label>
+
+                <input asp-for="ImportPrice"
+                       type="number"
+                       min="0"
+                       class="input" />
+
+                <span asp-validation-for="ImportPrice"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="ExportPrice"
+                       class="form-label">
+                    Giá xuất *
+                </label>
+
+                <input asp-for="ExportPrice"
+                       type="number"
+                       min="0"
+                       class="input" />
+
+                <span asp-validation-for="ExportPrice"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="MinimumStock"
+                       class="form-label">
+                    Mức tồn tối thiểu *
+                </label>
+
+                <input asp-for="MinimumStock"
+                       type="number"
+                       min="0"
+                       class="input" />
+
+                <span asp-validation-for="MinimumStock"
+                      class="validation"></span>
+
+            </div>
+
+            <div class="stock-info">
+                <strong>Tồn kho ban đầu: 0.</strong>
+                Số lượng hàng chỉ thay đổi khi thực hiện nghiệp vụ
+                nhập kho hoặc xuất kho.
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <a asp-action="Index"
+               class="btn-back">
+                Quay lại
+            </a>
+
+            <button type="submit"
+                    class="btn-save">
+                Lưu thay đổi
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

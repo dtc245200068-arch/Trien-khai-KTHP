@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - KhoFlow</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <style>
+        :root {
+            --primary: #c96f32;
+            --primary-dark: #a65321;
+            --primary-light: #fff3e8;
+            --background: #f7f5f2;
+            --surface: #ffffff;
+            --text: #292524;
+            --muted: #78716c;
+            --border: #e7e5e4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        /* HEADER */
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-main {
+            height: 74px;
+            max-width: 1500px;
+            margin: auto;
+            padding: 0 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--primary);
+            color: white;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            box-shadow: 0 7px 16px rgba(201, 111, 50, 0.22);
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        /* USER */
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 6px 11px 6px 6px;
+
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--primary-light);
+            color: var(--primary);
+
+            font-weight: 800;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .user-role {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .logout-btn {
+            width: 40px;
+            height: 40px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            background: white;
+
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #fff1f2;
+            border-color: #fecdd3;
+        }
+
+        /* MENU NGANG */
+
+        .navigation {
+            background: white;
+        }
+
+        .navigation-inner {
+            max-width: 1500px;
+            margin: auto;
+
+            padding: 0 32px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 4px;
+
+            overflow-x: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 13px 15px;
+
+            color: #57534e;
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            border-bottom: 3px solid transparent;
+
+            white-space: nowrap;
+
+            transition: 0.18s;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            background: #fffaf6;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 25px;
+            background: var(--border);
+            margin: 0 6px;
+        }
+
+        /* MAIN */
+
+        .main {
+            max-width: 1500px;
+            margin: auto;
+            padding: 28px 32px 40px;
+        }
+
+        .breadcrumb-text {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 7px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 22px;
+        }
+
+        .page-title {
+            margin: 0;
+
+            font-size: 26px;
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 11px;
+
+            background: #f0fdf4;
+            color: #166534;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            background: #22c55e;
+
+            border-radius: 50%;
+        }
+
+        .content-box {
+            min-height: 600px;
+        }
+
+        @@media (max-width: 800px) {
+            .header-main,
+            .navigation-inner,
+            .main {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .brand-subtitle,
+            .user-role {
+                display: none;
+            }
+
+            .page-header {
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <!-- DÒNG TRÊN -->
+    <div class="header-main">
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="brand">
+
+            <div class="brand-icon">
+                K
+            </div>
+
+            <div>
+                <div class="brand-name">
+                    KhoFlow
+                </div>
+
+                <div class="brand-subtitle">
+                    Hệ thống quản lý kho hàng
+                </div>
+            </div>
+
+        </a>
+
+
+        <div class="header-right">
+
+            <div class="user-box">
+
+                <div class="avatar">
+                    @{
+                        var displayName = User.Identity?.Name ?? "U";
+                        var firstLetter =
+                            displayName.Substring(0, 1).ToUpper();
+                    }
+
+                    @firstLetter
+                </div>
+
+                <div>
+                    <div class="user-name">
+                        @User.Identity?.Name
+                    </div>
+
+                    <div class="user-role">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <span>Quản trị viên</span>
+                        }
+                        else
+                        {
+                            <span>Nhân viên kho</span>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+
+            <form asp-controller="Account"
+                  asp-action="Logout"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="logout-btn"
+                        title="Đăng xuất">
+                    ↪
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- MENU NGANG -->
+    <nav class="navigation">
+
+        <div class="navigation-inner">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="nav-item active">
+                ◈ Tổng quan
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a asp-controller="Categories"
+   asp-action="Index"
+   class="nav-item">
+    ▦ Danh mục
+</a>
+
+            <a asp-controller="Suppliers"
+   asp-action="Index"
+   class="nav-item">
+    ◇ Nhà cung cấp
+</a>
+
+            <a asp-controller="Products"
+   asp-action="Index"
+   class="nav-item">
+    ▣ Sản phẩm
+</a>
+
+            <div class="nav-divider"></div>
+
+            <a asp-controller="StockImports"
+   asp-action="Index"
+   class="nav-item">
+    ⇩ Nhập kho
+</a>
+            <a asp-controller="StockExports"
+   asp-action="Index"
+   class="nav-item">
+    ⇧ Xuất kho
+</a>
+            <a asp-controller="Inventory"
+   asp-action="Index"
+   class="nav-item">
+    ◫ Tồn kho
+</a>
+
+            <a asp-controller="StockHistory"
+   asp-action="Index"
+   class="nav-item">
+    ↻ Lịch sử kho
+</a>
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="main">
+
+    <div class="breadcrumb-text">
+        KhoFlow / @ViewData["Title"]
+    </div>
+
+    <div class="page-header">
+
+        <h1 class="page-title">
+            @ViewData["Title"]
+        </h1>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            Hệ thống hoạt động
+        </div>
+
+    </div>
+
+
+    <div class="content-box">
+        @RenderBody()
+    </div>
+
+</main>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+@model IEnumerable<InventoryManagement.Models.Supplier>
+
+@{
+    ViewData["Title"] = "Nhà cung cấp";
+}
+
+<style>
+    .supplier-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 8px;
+        width: 520px;
+        max-width: 100%;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: #c96f32;
+    }
+
+    .btn-search {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        background: #292524;
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-add {
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: #c96f32;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .btn-add:hover {
+        background: #a65321;
+        color: white;
+    }
+
+    .supplier-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .supplier-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .supplier-table th {
+        padding: 13px 15px;
+        background: #fafaf9;
+        color: #78716c;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .supplier-table td {
+        padding: 15px;
+        border-top: 1px solid #f5f5f4;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .supplier-name {
+        font-weight: 700;
+    }
+
+    .status-active,
+    .status-inactive {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .status-inactive {
+        background: #f5f5f4;
+        color: #78716c;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .btn-edit,
+    .btn-toggle {
+        padding: 6px 10px;
+        border: 1px solid #e7e5e4;
+        border-radius: 8px;
+        background: white;
+        color: #44403c;
+        text-decoration: none;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .btn-edit:hover {
+        color: #c96f32;
+        border-color: #fed7aa;
+    }
+
+    .alert-success-custom {
+        padding: 12px 15px;
+        margin-bottom: 18px;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 13px;
+    }
+
+    .empty {
+        padding: 45px !important;
+        text-align: center;
+        color: #a8a29e;
+    }
+</style>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success-custom">
+        ✓ @TempData["Success"]
+    </div>
+}
+
+<div class="supplier-toolbar">
+
+    <form asp-action="Index"
+          method="get"
+          class="search-form">
+
+        <input type="text"
+               name="search"
+               value="@ViewBag.Search"
+               class="search-input"
+               placeholder="Tìm tên, số điện thoại hoặc email..." />
+
+        <button type="submit"
+                class="btn-search">
+            Tìm kiếm
+        </button>
+
+    </form>
+
+    <a asp-action="Create"
+       class="btn-add">
+        + Thêm nhà cung cấp
+    </a>
+
+</div>
+
+<div class="supplier-card">
+
+    <table class="supplier-table">
+
+        <thead>
+            <tr>
+                <th>NHÀ CUNG CẤP</th>
+                <th>ĐIỆN THOẠI</th>
+                <th>EMAIL</th>
+                <th>ĐỊA CHỈ</th>
+                <th>TRẠNG THÁI</th>
+                <th style="width:180px;">THAO TÁC</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="6"
+                    class="empty">
+                    Chưa có nhà cung cấp.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var supplier in Model)
+            {
+                <tr>
+
+                    <td class="supplier-name">
+                        @supplier.Name
+                    </td>
+
+                    <td>
+                        @(supplier.Phone ?? "-")
+                    </td>
+
+                    <td>
+                        @(supplier.Email ?? "-")
+                    </td>
+
+                    <td>
+                        @(supplier.Address ?? "-")
+                    </td>
+
+                    <td>
+                        @if (supplier.IsActive)
+                        {
+                            <span class="status-active">
+                                Đang hoạt động
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-inactive">
+                                Ngừng hoạt động
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <div class="actions">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@supplier.Id"
+                               class="btn-edit">
+                                Sửa
+                            </a>
+
+                            <form asp-action="ToggleStatus"
+                                  asp-route-id="@supplier.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn-toggle">
+
+                                    @(supplier.IsActive
+                                        ? "Ngừng dùng"
+                                        : "Kích hoạt")
+
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </td>
+
+                </tr>
+            }
+        }
+
+        </tbody>
+
+    </table>
+
+</div>

@@ -1,0 +1,287 @@
+@model IEnumerable<InventoryManagement.Controllers.StockHistoryItem>
+
+@{
+    ViewData["Title"] = "Lịch sử kho";
+}
+
+<style>
+    .history-header {
+        margin-bottom: 20px;
+    }
+
+    .history-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #292524;
+    }
+
+    .history-subtitle {
+        margin-top: 4px;
+        color: #78716c;
+        font-size: 13px;
+    }
+
+    .filter-card {
+        display: flex;
+        gap: 10px;
+        padding: 15px;
+        margin-bottom: 18px;
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 14px;
+    }
+
+    .search-input,
+    .type-select {
+        padding: 10px 12px;
+        border: 1px solid #e7e5e4;
+        border-radius: 9px;
+        outline: none;
+    }
+
+    .search-input {
+        flex: 1;
+    }
+
+    .type-select {
+        min-width: 180px;
+    }
+
+    .btn-filter {
+        padding: 10px 17px;
+        border: none;
+        border-radius: 9px;
+        background: #c96f32;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-reset {
+        padding: 10px 15px;
+        border: 1px solid #e7e5e4;
+        border-radius: 9px;
+        background: white;
+        color: #57534e;
+        text-decoration: none;
+    }
+
+    .table-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        padding: 13px;
+        background: #fafaf9;
+        color: #78716c;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .history-table td {
+        padding: 13px;
+        border-top: 1px solid #f5f5f4;
+        font-size: 12px;
+    }
+
+    .code {
+        font-weight: 800;
+        color: #44403c;
+    }
+
+    .product-code {
+        color: #c96f32;
+        font-weight: 800;
+    }
+
+    .money {
+        font-weight: 700;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .badge-import {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-export {
+        background: #ffedd5;
+        color: #9a3412;
+    }
+
+    .empty {
+        padding: 45px !important;
+        text-align: center;
+        color: #a8a29e;
+    }
+</style>
+
+<div class="history-header">
+
+    <div class="history-title">
+        Lịch sử nhập / xuất kho
+    </div>
+
+    <div class="history-subtitle">
+        Theo dõi toàn bộ biến động hàng hóa trong kho.
+    </div>
+
+</div>
+
+<form method="get"
+      asp-action="Index"
+      class="filter-card">
+
+    <input type="text"
+           name="search"
+           value="@ViewBag.Search"
+           class="search-input"
+           placeholder="Tìm mã phiếu, mã hoặc tên sản phẩm..." />
+
+    <select name="type"
+            class="type-select">
+
+        <option value="">
+            Tất cả giao dịch
+        </option>
+
+        <option value="import"
+                selected="@(ViewBag.Type == "import")">
+            Nhập kho
+        </option>
+
+        <option value="export"
+                selected="@(ViewBag.Type == "export")">
+            Xuất kho
+        </option>
+
+    </select>
+
+    <button type="submit"
+            class="btn-filter">
+        Lọc
+    </button>
+
+    <a asp-action="Index"
+       class="btn-reset">
+        Đặt lại
+    </a>
+
+</form>
+
+<div class="table-card">
+
+    <div style="overflow-x:auto;">
+
+        <table class="history-table">
+
+            <thead>
+                <tr>
+                    <th>THỜI GIAN</th>
+                    <th>LOẠI</th>
+                    <th>MÃ PHIẾU</th>
+                    <th>MÃ SP</th>
+                    <th>SẢN PHẨM</th>
+                    <th>SL</th>
+                    <th>ĐƠN GIÁ</th>
+                    <th>THÀNH TIỀN</th>
+                    <th>ĐỐI TÁC / NGƯỜI NHẬN</th>
+                    <th>NGƯỜI TẠO</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="10"
+                        class="empty">
+                        Chưa có lịch sử nhập/xuất kho.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @item.Date.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+
+                        <td>
+                            @if (item.Type == "Nhập kho")
+                            {
+                                <span class="badge badge-import">
+                                    ↓ Nhập kho
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-export">
+                                    ↑ Xuất kho
+                                </span>
+                            }
+                        </td>
+
+                        <td class="code">
+                            @item.Code
+                        </td>
+
+                        <td class="product-code">
+                            @item.ProductCode
+                        </td>
+
+                        <td>
+                            @item.ProductName
+                        </td>
+
+                        <td>
+                            <strong>@item.Quantity</strong>
+                            @item.Unit
+                        </td>
+
+                        <td>
+                            @item.UnitPrice.ToString("N0") đ
+                        </td>
+
+                        <td class="money">
+                            @item.Amount.ToString("N0") đ
+                        </td>
+
+                        <td>
+                            @item.Partner
+                        </td>
+
+                        <td>
+                            @item.CreatedBy
+                        </td>
+
+                    </tr>
+                }
+            }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

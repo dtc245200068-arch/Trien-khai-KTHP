@@ -1,0 +1,156 @@
+@model IEnumerable<InventoryManagement.Models.StockImport>
+
+@{
+    ViewData["Title"] = "Phiếu nhập kho";
+}
+
+<style>
+    .page-tools {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 18px;
+    }
+
+    .btn-create {
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: #c96f32;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .table-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        background: #fafaf9;
+        color: #78716c;
+        padding: 13px 15px;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .data-table td {
+        padding: 14px 15px;
+        border-top: 1px solid #f5f5f4;
+        font-size: 12px;
+    }
+
+    .code {
+        font-weight: 800;
+        color: #c96f32;
+    }
+
+    .money {
+        font-weight: 700;
+    }
+
+    .btn-detail {
+        padding: 6px 10px;
+        border: 1px solid #e7e5e4;
+        border-radius: 8px;
+        color: #44403c;
+        text-decoration: none;
+    }
+
+    .empty {
+        padding: 45px !important;
+        text-align: center;
+        color: #a8a29e;
+    }
+</style>
+
+<div class="page-tools">
+
+    <a asp-action="Create"
+       class="btn-create">
+        + Tạo phiếu nhập
+    </a>
+
+</div>
+
+<div class="table-card">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>MÃ PHIẾU</th>
+                <th>NGÀY NHẬP</th>
+                <th>NHÀ CUNG CẤP</th>
+                <th>SỐ MẶT HÀNG</th>
+                <th>TỔNG TIỀN</th>
+                <th>NGƯỜI TẠO</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="7"
+                    class="empty">
+                    Chưa có phiếu nhập kho.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td class="code">
+                        @item.Code
+                    </td>
+
+                    <td>
+                        @item.ImportDate.ToString("dd/MM/yyyy HH:mm")
+                    </td>
+
+                    <td>
+                        @(item.Supplier?.Name ?? "-")
+                    </td>
+
+                    <td>
+                        @item.Details.Count
+                    </td>
+
+                    <td class="money">
+                        @item.TotalAmount.ToString("N0") đ
+                    </td>
+
+                    <td>
+                        @(item.CreatedBy ?? "-")
+                    </td>
+
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="btn-detail">
+                            Chi tiết
+                        </a>
+                    </td>
+
+                </tr>
+            }
+        }
+
+        </tbody>
+
+    </table>
+
+</div>

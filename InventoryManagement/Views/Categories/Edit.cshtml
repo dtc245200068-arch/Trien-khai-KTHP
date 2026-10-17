@@ -1,0 +1,159 @@
+@model InventoryManagement.Models.Category
+
+@{
+    ViewData["Title"] = "Cập nhật danh mục";
+}
+
+<style>
+    .form-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 18px;
+        padding: 28px;
+    }
+
+    .form-title {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .form-description {
+        color: #78716c;
+        font-size: 12px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+        outline: none;
+    }
+
+    .form-control-custom:focus {
+        border-color: #c96f32;
+    }
+
+    textarea.form-control-custom {
+        min-height: 110px;
+    }
+
+    .validation {
+        display: block;
+        color: #dc2626;
+        font-size: 11px;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+        margin-top: 25px;
+    }
+
+    .btn-back,
+    .btn-save {
+        padding: 10px 17px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .btn-back {
+        border: 1px solid #e7e5e4;
+        color: #57534e;
+    }
+
+    .btn-save {
+        border: none;
+        background: #c96f32;
+        color: white;
+    }
+</style>
+
+<div class="form-card">
+
+    <div class="form-title">
+        Cập nhật thông tin
+    </div>
+
+    <div class="form-description">
+        Chỉnh sửa thông tin danh mục sản phẩm.
+    </div>
+
+    <form asp-action="Edit"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="Id"
+               type="hidden" />
+
+        <div class="form-group">
+
+            <label asp-for="Name"
+                   class="form-label">
+                Tên danh mục
+            </label>
+
+            <input asp-for="Name"
+                   class="form-control-custom" />
+
+            <span asp-validation-for="Name"
+                  class="validation"></span>
+
+        </div>
+
+        <div class="form-group">
+
+            <label asp-for="Description"
+                   class="form-label">
+                Mô tả
+            </label>
+
+            <textarea asp-for="Description"
+                      class="form-control-custom"></textarea>
+
+            <span asp-validation-for="Description"
+                  class="validation"></span>
+
+        </div>
+
+        <div class="form-actions">
+
+            <a asp-action="Index"
+               class="btn-back">
+                Quay lại
+            </a>
+
+            <button type="submit"
+                    class="btn-save">
+                Lưu thay đổi
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

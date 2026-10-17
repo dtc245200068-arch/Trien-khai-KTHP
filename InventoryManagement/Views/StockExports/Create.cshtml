@@ -1,0 +1,487 @@
+@model InventoryManagement.ViewModels.StockExportCreateViewModel
+
+@{
+    ViewData["Title"] = "Xuất kho";
+}
+
+<style>
+    .export-card {
+        background: #fff;
+        border: 1px solid #e7e5e4;
+        border-radius: 18px;
+        padding: 28px;
+    }
+
+    .export-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #292524;
+        margin-bottom: 5px;
+    }
+
+    .export-subtitle {
+        color: #78716c;
+        font-size: 13px;
+        margin-bottom: 25px;
+    }
+
+    .top-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #44403c;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #e7e5e4;
+        border-radius: 10px;
+        outline: none;
+        background: white;
+    }
+
+    .form-control-custom:focus {
+        border-color: #c96f32;
+    }
+
+    .section-title {
+        margin: 25px 0 12px;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .items-table th {
+        padding: 11px;
+        background: #fafaf9;
+        color: #78716c;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .items-table td {
+        padding: 10px;
+        border-top: 1px solid #f5f5f4;
+    }
+
+    .product-select {
+        min-width: 280px;
+    }
+
+    .quantity-input {
+        width: 110px;
+    }
+
+    .price-input {
+        width: 170px;
+    }
+
+    .stock-cell {
+        min-width: 100px;
+        font-weight: 700;
+        color: #15803d;
+    }
+
+    .amount-cell {
+        min-width: 150px;
+        font-weight: 700;
+    }
+
+    .btn-remove {
+        padding: 7px 10px;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        background: white;
+        color: #dc2626;
+        cursor: pointer;
+    }
+
+    .btn-add-row {
+        margin-top: 15px;
+        padding: 9px 14px;
+        border: 1px dashed #c96f32;
+        border-radius: 10px;
+        background: #fff7ed;
+        color: #c96f32;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .summary {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 25px;
+    }
+
+    .summary-box {
+        min-width: 300px;
+        padding: 18px;
+        border: 1px solid #e7e5e4;
+        border-radius: 14px;
+        background: #fafaf9;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-value {
+        color: #c96f32;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn-back,
+    .btn-save {
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        border: 1px solid #e7e5e4;
+        background: white;
+        color: #57534e;
+    }
+
+    .btn-save {
+        border: none;
+        background: #c96f32;
+        color: white;
+        cursor: pointer;
+    }
+
+    .validation-summary {
+        padding: 12px 15px;
+        margin-bottom: 18px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 12px;
+    }
+</style>
+
+<div class="export-card">
+
+    <div class="export-title">
+        Tạo phiếu xuất kho
+    </div>
+
+    <div class="export-subtitle">
+        Chọn sản phẩm và số lượng cần xuất khỏi kho.
+    </div>
+
+    <form asp-action="Create"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All"
+                 class="validation-summary"></div>
+        }
+
+        <div class="top-grid">
+
+            <div>
+                <label class="form-label">
+                    Người nhận
+                </label>
+
+                <input asp-for="Receiver"
+                       class="form-control-custom"
+                       placeholder="Nhập tên người hoặc đơn vị nhận hàng" />
+            </div>
+
+            <div>
+                <label class="form-label">
+                    Ghi chú
+                </label>
+
+                <input asp-for="Note"
+                       class="form-control-custom"
+                       placeholder="Ví dụ: Xuất hàng cho bộ phận kinh doanh" />
+            </div>
+
+        </div>
+
+        <div class="section-title">
+            Chi tiết hàng xuất
+        </div>
+
+        <div style="overflow-x:auto;">
+
+            <table class="items-table">
+
+                <thead>
+                    <tr>
+                        <th>SẢN PHẨM</th>
+                        <th>TỒN HIỆN TẠI</th>
+                        <th>SỐ LƯỢNG XUẤT</th>
+                        <th>GIÁ XUẤT</th>
+                        <th>THÀNH TIỀN</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody id="itemsBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <button type="button"
+                class="btn-add-row"
+                onclick="addRow()">
+            + Thêm sản phẩm
+        </button>
+
+        <div class="summary">
+
+            <div class="summary-box">
+
+                <div class="summary-row">
+
+                    <span>Tổng giá trị xuất</span>
+
+                    <span id="grandTotal"
+                          class="total-value">
+                        0 đ
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <a asp-action="Index"
+               class="btn-back">
+                Quay lại
+            </a>
+
+            <button type="submit"
+                    class="btn-save">
+                Lưu phiếu xuất
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    const products = [
+        @foreach (var product in Model.Products)
+        {
+            <text>
+            {
+                id: @product.Id,
+                code: '@Html.Raw(product.Code.Replace("'", "\\'"))',
+                name: '@Html.Raw(product.Name.Replace("'", "\\'"))',
+                quantity: @product.Quantity,
+                price: @product.ExportPrice.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture)
+            },
+            </text>
+        }
+    ];
+
+    let rowIndex = 0;
+
+    function addRow() {
+
+        const tbody =
+            document.getElementById("itemsBody");
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <select
+                    name="Items[${rowIndex}].ProductId"
+                    class="form-control-custom product-select"
+                    onchange="productChanged(this)">
+
+                    <option value="0">
+                        -- Chọn sản phẩm --
+                    </option>
+
+                    ${products.map(p =>
+                        `<option value="${p.id}"
+                                 data-stock="${p.quantity}"
+                                 data-price="${p.price}">
+                            ${p.code} - ${p.name}
+                         </option>`
+                    ).join("")}
+
+                </select>
+            </td>
+
+            <td class="stock-cell">
+                0
+            </td>
+
+            <td>
+                <input
+                    name="Items[${rowIndex}].Quantity"
+                    type="number"
+                    value="1"
+                    min="1"
+                    class="form-control-custom quantity-input"
+                    oninput="calculateRow(this)" />
+            </td>
+
+            <td>
+                <input
+                    name="Items[${rowIndex}].UnitPrice"
+                    type="number"
+                    value="0"
+                    min="0"
+                    step="0.01"
+                    class="form-control-custom price-input"
+                    oninput="calculateRow(this)" />
+            </td>
+
+            <td class="amount-cell">
+                0 đ
+            </td>
+
+            <td>
+                <button
+                    type="button"
+                    class="btn-remove"
+                    onclick="removeRow(this)">
+                    Xóa
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+
+        rowIndex++;
+    }
+
+    function productChanged(select) {
+
+        const row = select.closest("tr");
+
+        const option =
+            select.options[select.selectedIndex];
+
+        const stock =
+            option.getAttribute("data-stock") || 0;
+
+        const price =
+            option.getAttribute("data-price") || 0;
+
+        row.querySelector(".stock-cell").innerText =
+            stock;
+
+        row.querySelector(".price-input").value =
+            price;
+
+        const quantityInput =
+            row.querySelector(".quantity-input");
+
+        quantityInput.max = stock;
+
+        calculateRow(quantityInput);
+    }
+
+    function calculateRow(element) {
+
+        const row = element.closest("tr");
+
+        const quantity =
+            parseFloat(
+                row.querySelector(".quantity-input").value
+            ) || 0;
+
+        const price =
+            parseFloat(
+                row.querySelector(".price-input").value
+            ) || 0;
+
+        row.querySelector(".amount-cell").innerText =
+            formatMoney(quantity * price);
+
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+
+        let total = 0;
+
+        document
+            .querySelectorAll("#itemsBody tr")
+            .forEach(row => {
+
+                const quantity =
+                    parseFloat(
+                        row.querySelector(".quantity-input").value
+                    ) || 0;
+
+                const price =
+                    parseFloat(
+                        row.querySelector(".price-input").value
+                    ) || 0;
+
+                total += quantity * price;
+            });
+
+        document.getElementById("grandTotal").innerText =
+            formatMoney(total);
+    }
+
+    function removeRow(button) {
+
+        button.closest("tr").remove();
+
+        calculateTotal();
+    }
+
+    function formatMoney(value) {
+
+        return new Intl.NumberFormat("vi-VN")
+            .format(value) + " đ";
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            addRow();
+        }
+    );
+</script>

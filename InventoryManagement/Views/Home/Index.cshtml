@@ -1,0 +1,809 @@
+@{
+    ViewData["Title"] = "Tổng quan kho";
+}
+
+<style>
+    .dashboard-home {
+        width: 100%;
+    }
+
+    /* =========================
+       WELCOME
+       ========================= */
+
+    .welcome-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 28px;
+        margin-bottom: 20px;
+
+        background: #fffaf5;
+        border: 1px solid #fdba74;
+        border-radius: 16px;
+    }
+
+    .welcome-content h2 {
+        margin: 0 0 7px 0;
+        font-size: 21px;
+        font-weight: 800;
+        color: #1c1917;
+    }
+
+    .welcome-content p {
+        margin: 0;
+        color: #78716c;
+        font-size: 12px;
+    }
+
+    .welcome-logo {
+        width: 56px;
+        height: 56px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        border-radius: 15px;
+        background: #d06d2c;
+        color: white;
+
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+
+    /* =========================
+       THỐNG KÊ
+       ========================= */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        position: relative;
+
+        min-height: 135px;
+        padding: 18px;
+
+        overflow: hidden;
+
+        background: #ffffff;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+    }
+
+    .stat-card::after {
+        content: "";
+
+        position: absolute;
+        right: -20px;
+        bottom: -25px;
+
+        width: 80px;
+        height: 80px;
+
+        border-radius: 50%;
+        background: #fff7ed;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin-bottom: 14px;
+
+        border-radius: 11px;
+        background: #fff7ed;
+        color: #d06d2c;
+
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .stat-label {
+        color: #78716c;
+
+        font-size: 10px;
+        font-weight: 800;
+
+        text-transform: uppercase;
+    }
+
+    .stat-value {
+        position: relative;
+        z-index: 2;
+
+        margin-top: 6px;
+
+        color: #1c1917;
+
+        font-size: 26px;
+        line-height: 1;
+        font-weight: 800;
+    }
+
+    .stat-description {
+        position: relative;
+        z-index: 2;
+
+        margin-top: 9px;
+
+        color: #a8a29e;
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       PHẦN DƯỚI DASHBOARD
+       ========================= */
+
+    .dashboard-bottom {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(310px, 1fr);
+        gap: 18px;
+    }
+
+    .dashboard-panel {
+        overflow: hidden;
+
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        min-height: 70px;
+        padding: 15px 19px;
+
+        border-bottom: 1px solid #f0eeec;
+    }
+
+    .panel-title {
+        color: #1c1917;
+
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .panel-subtitle {
+        margin-top: 4px;
+
+        color: #a8a29e;
+        font-size: 10px;
+    }
+
+    .warning-count {
+        padding: 6px 9px;
+
+        border-radius: 20px;
+
+        background: #fff7ed;
+        color: #c2410c;
+
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+
+    /* =========================
+       CẢNH BÁO TỒN KHO
+       ========================= */
+
+    .warning-body {
+        min-height: 290px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 25px;
+    }
+
+    .warning-empty {
+        text-align: center;
+        color: #a8a29e;
+
+        font-size: 11px;
+    }
+
+    .warning-check {
+        margin-bottom: 12px;
+
+        color: #a8a29e;
+
+        font-size: 29px;
+        font-weight: 300;
+    }
+
+    .warning-has-data {
+        width: 100%;
+
+        text-align: center;
+    }
+
+    .warning-symbol {
+        width: 48px;
+        height: 48px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0 auto 12px;
+
+        border-radius: 13px;
+
+        background: #fff7ed;
+        color: #ea580c;
+
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+    .warning-message {
+        margin-bottom: 16px;
+
+        color: #78716c;
+        font-size: 11px;
+    }
+
+    .warning-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 10px 15px;
+
+        border-radius: 9px;
+
+        background: #d06d2c;
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 11px;
+        font-weight: 700;
+
+        transition: 0.2s ease;
+    }
+
+    .warning-button:hover {
+        background: #b95d24;
+        color: white;
+        text-decoration: none;
+    }
+
+
+    /* =========================
+       THAO TÁC NHANH
+       ========================= */
+
+    .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+
+        padding: 15px;
+    }
+
+    .quick-action {
+        width: 100%;
+        min-height: 57px;
+
+        display: flex;
+        align-items: center;
+        gap: 11px;
+
+        padding: 10px 12px;
+
+        background: #ffffff;
+
+        border: 1px solid #ebe7e3;
+        border-radius: 11px;
+
+        color: #292524;
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .quick-action:hover {
+        background: #fffaf5;
+
+        border-color: #d97732;
+
+        color: #292524;
+        text-decoration: none;
+
+        transform: translateX(3px);
+
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+    }
+
+    .quick-icon {
+        width: 32px;
+        height: 32px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        border-radius: 9px;
+
+        background: #fff5eb;
+        color: #d06d2c;
+
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .quick-content {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .quick-title {
+        display: block;
+
+        color: #292524;
+
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .quick-description {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #a8a29e;
+
+        font-size: 9px;
+    }
+
+    .quick-arrow {
+        flex-shrink: 0;
+
+        color: #d6d3d1;
+
+        font-size: 18px;
+        font-weight: 700;
+
+        transition: 0.2s ease;
+    }
+
+    .quick-action:hover .quick-arrow {
+        color: #d06d2c;
+        transform: translateX(2px);
+    }
+
+
+    /* =========================
+       RESPONSIVE
+       ========================= */
+
+    @@media (max-width: 1050px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .dashboard-bottom {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-box {
+            padding: 20px;
+        }
+
+        .welcome-logo {
+            width: 48px;
+            height: 48px;
+        }
+    }
+</style>
+
+
+<div class="dashboard-home">
+
+    <!-- =====================================
+         CHÀO MỪNG
+         ===================================== -->
+
+    <div class="welcome-box">
+
+        <div class="welcome-content">
+
+            <h2>
+                Xin chào, @(User.Identity?.Name ?? "Quản trị viên")!
+            </h2>
+
+            <p>
+                Theo dõi nhanh tình trạng hàng hóa và hoạt động của kho.
+            </p>
+
+        </div>
+
+        <div class="welcome-logo">
+            K
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         4 THẺ THỐNG KÊ
+         DÙNG ĐÚNG VIEWBAG TỪ HOMECONTROLLER
+         ===================================== -->
+
+    <div class="stats-grid">
+
+        <!-- SẢN PHẨM -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ▣
+            </div>
+
+            <div class="stat-label">
+                Sản phẩm
+            </div>
+
+            <div class="stat-value">
+                @ViewBag.TotalProducts
+            </div>
+
+            <div class="stat-description">
+                Sản phẩm đang hoạt động
+            </div>
+
+        </div>
+
+
+        <!-- TỔNG TỒN KHO -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ≡
+            </div>
+
+            <div class="stat-label">
+                Tổng tồn kho
+            </div>
+
+            <div class="stat-value">
+                @ViewBag.TotalStock
+            </div>
+
+            <div class="stat-description">
+                Tổng số lượng hàng hiện có
+            </div>
+
+        </div>
+
+
+        <!-- NHÀ CUNG CẤP -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ◇
+            </div>
+
+            <div class="stat-label">
+                Nhà cung cấp
+            </div>
+
+            <div class="stat-value">
+                @ViewBag.TotalSuppliers
+            </div>
+
+            <div class="stat-description">
+                Nhà cung cấp đang hoạt động
+            </div>
+
+        </div>
+
+
+        <!-- SẮP HẾT HÀNG -->
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                !
+            </div>
+
+            <div class="stat-label">
+                Sắp hết hàng
+            </div>
+
+            <div class="stat-value">
+                @ViewBag.LowStockCount
+            </div>
+
+            <div class="stat-description">
+                Sản phẩm cần chú ý
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         PHẦN DƯỚI
+         ===================================== -->
+
+    <div class="dashboard-bottom">
+
+
+        <!-- =================================
+             CẢNH BÁO TỒN KHO
+             ================================= -->
+
+        <div class="dashboard-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Cảnh báo tồn kho
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Sản phẩm đã chạm mức tồn kho tối thiểu
+                    </div>
+
+                </div>
+
+                <div class="warning-count">
+                    @ViewBag.LowStockCount cảnh báo
+                </div>
+
+            </div>
+
+
+            <div class="warning-body">
+
+                @if ((int)(ViewBag.LowStockCount ?? 0) <= 0)
+                {
+                    <div class="warning-empty">
+
+                        <div class="warning-check">
+                            ✓
+                        </div>
+
+                        <div>
+                            Hiện chưa có sản phẩm nào cần cảnh báo tồn kho.
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="warning-has-data">
+
+                        <div class="warning-symbol">
+                            !
+                        </div>
+
+                        <div class="warning-message">
+                            Có @ViewBag.LowStockCount sản phẩm đang ở mức tồn kho thấp.
+                        </div>
+
+                        <a asp-controller="Inventory"
+                           asp-action="Index"
+                           asp-route-status="low"
+                           class="warning-button">
+                            Kiểm tra tồn kho
+                        </a>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             THAO TÁC NHANH
+             TẤT CẢ ĐỀU BẤM ĐƯỢC
+             ================================= -->
+
+        <div class="dashboard-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Thao tác nhanh
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Các nghiệp vụ thường dùng
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="quick-actions">
+
+
+                <!-- THÊM SẢN PHẨM -->
+                <a asp-controller="Products"
+                   asp-action="Create"
+                   class="quick-action">
+
+                    <span class="quick-icon">
+                        +
+                    </span>
+
+                    <span class="quick-content">
+
+                        <span class="quick-title">
+                            Thêm sản phẩm mới
+                        </span>
+
+                        <span class="quick-description">
+                            Tạo sản phẩm trong kho
+                        </span>
+
+                    </span>
+
+                    <span class="quick-arrow">
+                        ›
+                    </span>
+
+                </a>
+
+
+                <!-- NHẬP KHO -->
+                <a asp-controller="StockImports"
+                   asp-action="Create"
+                   class="quick-action">
+
+                    <span class="quick-icon">
+                        ↓
+                    </span>
+
+                    <span class="quick-content">
+
+                        <span class="quick-title">
+                            Tạo phiếu nhập kho
+                        </span>
+
+                        <span class="quick-description">
+                            Nhập hàng và tăng số lượng tồn
+                        </span>
+
+                    </span>
+
+                    <span class="quick-arrow">
+                        ›
+                    </span>
+
+                </a>
+
+
+                <!-- XUẤT KHO -->
+                <a asp-controller="StockExports"
+                   asp-action="Create"
+                   class="quick-action">
+
+                    <span class="quick-icon">
+                        ↑
+                    </span>
+
+                    <span class="quick-content">
+
+                        <span class="quick-title">
+                            Tạo phiếu xuất kho
+                        </span>
+
+                        <span class="quick-description">
+                            Xuất hàng và giảm số lượng tồn
+                        </span>
+
+                    </span>
+
+                    <span class="quick-arrow">
+                        ›
+                    </span>
+
+                </a>
+
+
+                <!-- TỒN KHO -->
+                <a asp-controller="Inventory"
+                   asp-action="Index"
+                   class="quick-action">
+
+                    <span class="quick-icon">
+                        ≡
+                    </span>
+
+                    <span class="quick-content">
+
+                        <span class="quick-title">
+                            Kiểm tra tồn kho
+                        </span>
+
+                        <span class="quick-description">
+                            Xem số lượng hàng hiện có
+                        </span>
+
+                    </span>
+
+                    <span class="quick-arrow">
+                        ›
+                    </span>
+
+                </a>
+
+
+                <!-- LỊCH SỬ KHO -->
+                <a asp-controller="StockHistory"
+                   asp-action="Index"
+                   class="quick-action">
+
+                    <span class="quick-icon">
+                        ↻
+                    </span>
+
+                    <span class="quick-content">
+
+                        <span class="quick-title">
+                            Xem lịch sử kho
+                        </span>
+
+                        <span class="quick-description">
+                            Theo dõi lịch sử nhập và xuất hàng
+                        </span>
+
+                    </span>
+
+                    <span class="quick-arrow">
+                        ›
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

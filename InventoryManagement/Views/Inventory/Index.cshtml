@@ -1,0 +1,350 @@
+@model IEnumerable<InventoryManagement.Models.Product>
+
+@{
+    ViewData["Title"] = "Tồn kho";
+}
+
+<style>
+    .inventory-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 15px;
+        padding: 18px;
+    }
+
+    .summary-label {
+        color: #78716c;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .summary-number {
+        margin-top: 7px;
+        font-size: 24px;
+        font-weight: 800;
+        color: #292524;
+    }
+
+    .summary-number.warning {
+        color: #d97706;
+    }
+
+    .summary-number.danger {
+        color: #dc2626;
+    }
+
+    .filter-card {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        padding: 15px;
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 14px;
+    }
+
+    .search-input,
+    .status-select {
+        padding: 10px 12px;
+        border: 1px solid #e7e5e4;
+        border-radius: 9px;
+        outline: none;
+    }
+
+    .search-input {
+        flex: 1;
+    }
+
+    .status-select {
+        min-width: 180px;
+    }
+
+    .btn-filter {
+        border: none;
+        border-radius: 9px;
+        padding: 10px 17px;
+        background: #c96f32;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-reset {
+        padding: 10px 15px;
+        border: 1px solid #e7e5e4;
+        border-radius: 9px;
+        color: #57534e;
+        text-decoration: none;
+    }
+
+    .inventory-card {
+        background: white;
+        border: 1px solid #e7e5e4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .inventory-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .inventory-table th {
+        padding: 13px 15px;
+        background: #fafaf9;
+        color: #78716c;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .inventory-table td {
+        padding: 14px 15px;
+        border-top: 1px solid #f5f5f4;
+        font-size: 12px;
+    }
+
+    .product-code {
+        color: #c96f32;
+        font-weight: 800;
+    }
+
+    .quantity {
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .badge-ok {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-low {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-out {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .empty {
+        padding: 40px !important;
+        text-align: center;
+        color: #a8a29e;
+    }
+
+    @@media (max-width: 900px) {
+        .inventory-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="inventory-summary">
+
+    <div class="summary-card">
+        <div class="summary-label">
+            Tổng sản phẩm
+        </div>
+
+        <div class="summary-number">
+            @ViewBag.TotalProducts
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="summary-label">
+            Tổng số lượng tồn
+        </div>
+
+        <div class="summary-number">
+            @ViewBag.TotalQuantity
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="summary-label">
+            Sắp hết hàng
+        </div>
+
+        <div class="summary-number warning">
+            @ViewBag.LowStock
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="summary-label">
+            Hết hàng
+        </div>
+
+        <div class="summary-number danger">
+            @ViewBag.OutOfStock
+        </div>
+    </div>
+
+</div>
+
+<form method="get"
+      asp-action="Index"
+      class="filter-card">
+
+    <input type="text"
+           name="search"
+           value="@ViewBag.Search"
+           class="search-input"
+           placeholder="Tìm theo mã hoặc tên sản phẩm..." />
+
+    <select name="status"
+            class="status-select">
+
+        <option value="">
+            Tất cả trạng thái
+        </option>
+
+        <option value="available"
+                selected="@(ViewBag.Status == "available")">
+            Còn hàng
+        </option>
+
+        <option value="low"
+                selected="@(ViewBag.Status == "low")">
+            Sắp hết hàng
+        </option>
+
+        <option value="out"
+                selected="@(ViewBag.Status == "out")">
+            Hết hàng
+        </option>
+
+    </select>
+
+    <button type="submit"
+            class="btn-filter">
+        Lọc
+    </button>
+
+    <a asp-action="Index"
+       class="btn-reset">
+        Đặt lại
+    </a>
+
+</form>
+
+<div class="inventory-card">
+
+    <table class="inventory-table">
+
+        <thead>
+            <tr>
+                <th>MÃ SP</th>
+                <th>SẢN PHẨM</th>
+                <th>DANH MỤC</th>
+                <th>ĐƠN VỊ</th>
+                <th>TỒN KHO</th>
+                <th>MỨC TỐI THIỂU</th>
+                <th>GIÁ NHẬP</th>
+                <th>GIÁ XUẤT</th>
+                <th>TRẠNG THÁI</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="9"
+                    class="empty">
+                    Không tìm thấy sản phẩm.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td class="product-code">
+                        @item.Code
+                    </td>
+
+                    <td>
+                        <strong>@item.Name</strong>
+                    </td>
+
+                    <td>
+                        @(item.Category?.Name ?? "-")
+                    </td>
+
+                    <td>
+                        @item.Unit
+                    </td>
+
+                    <td>
+                        <span class="quantity">
+                            @item.Quantity
+                        </span>
+                    </td>
+
+                    <td>
+                        @item.MinimumStock
+                    </td>
+
+                    <td>
+                        @item.ImportPrice.ToString("N0") đ
+                    </td>
+
+                    <td>
+                        @item.ExportPrice.ToString("N0") đ
+                    </td>
+
+                    <td>
+
+                        @if (item.Quantity <= 0)
+                        {
+                            <span class="badge badge-out">
+                                Hết hàng
+                            </span>
+                        }
+                        else if (item.Quantity <= item.MinimumStock)
+                        {
+                            <span class="badge badge-low">
+                                Sắp hết
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-ok">
+                                Còn hàng
+                            </span>
+                        }
+
+                    </td>
+
+                </tr>
+            }
+        }
+
+        </tbody>
+
+    </table>
+
+</div>
