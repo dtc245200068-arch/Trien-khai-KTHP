@@ -1,5 +1,5 @@
 # =========================
-# GIAI ĐOẠN BUILD
+# GIAI DOAN BUILD
 # =========================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
@@ -18,7 +18,7 @@ RUN dotnet publish "InventoryManagement.csproj" \
 
 
 # =========================
-# GIAI ĐOẠN CHẠY
+# GIAI DOAN CHAY
 # =========================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 
@@ -30,5 +30,8 @@ ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 EXPOSE 8080
+
+# Chay ung dung bang user khong phai root
+USER app
 
 ENTRYPOINT ["dotnet", "InventoryManagement.dll"]

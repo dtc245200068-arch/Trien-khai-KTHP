@@ -32,7 +32,6 @@ services:
   # ==================================================
   mysql:
     image: mysql:8.0
-
     container_name: inventory-final-mysql
     restart: unless-stopped
 
@@ -48,9 +47,6 @@ services:
     volumes:
       - inventory_mysql_data:/var/lib/mysql
 
-    networks:
-      - inventory_network
-
     healthcheck:
       test:
         [
@@ -62,13 +58,15 @@ services:
       retries: 10
       start_period: 20s
 
+    networks:
+      - inventory_network
+
 
   # ==================================================
   # 3. PHPMYADMIN
   # ==================================================
   phpmyadmin:
     image: phpmyadmin:latest
-
     container_name: inventory-final-phpmyadmin
     restart: unless-stopped
 
@@ -92,7 +90,6 @@ services:
   # ==================================================
   nginx:
     image: nginx:alpine
-
     container_name: inventory-final-nginx
     restart: unless-stopped
 
@@ -109,11 +106,143 @@ services:
       - inventory_network
 
 
+  # ==================================================
+  # 5. PROMETHEUS
+  # ==================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: inventory-final-prometheus
+    restart: unless-stopped
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+    ports:
+      - "9091:9090"
+
+    networks:
+      - inventory_network
+
+
+  # ==================================================
+  # 6. GRAFANA
+  # ==================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: inventory-final-grafana
+    restart: unless-stopped
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: Admin@Inventory2026
+
+    ports:
+      - "3001:3000"
+
+    volumes:
+      - inventory_grafana_data:/var/lib/grafana
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - inventory_network
+
+
+  # ==================================================
+  # 7. CADVISOR - GIAM SAT CONTAINER
+  # ==================================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: inventory-final-cadvisor
+    restart: unless-stopped
+
+    privileged: true
+
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+    networks:
+      - inventory_network
+
+
+  # ==================================================
+  # 8. MYSQL EXPORTER - GIAM SAT DATABASE
+  # ==================================================
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: inventory-final-mysql-exporter
+    restart: unless-stopped
+
+    command:
+      - "--mysqld.username=${MYSQL_USER}:${MYSQL_PASSWORD}"
+      - "--mysqld.address=mysql:3306"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    networks:
+      - inventory_network
+
+
+  # ==================================================
+  # 9. LOKI - LUU TRU LOG TAP TRUNG
+  # ==================================================
+  loki:
+    image: grafana/loki:latest
+    container_name: inventory-final-loki
+    restart: unless-stopped
+
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - inventory_loki_data:/loki
+
+    ports:
+      - "3100:3100"
+
+    networks:
+      - inventory_network
+
+
+  # ==================================================
+  # 10. PROMTAIL - THU THAP LOG DOCKER
+  # ==================================================
+  promtail:
+    image: grafana/promtail:latest
+    container_name: inventory-final-promtail
+    restart: unless-stopped
+
+    command:
+      - "-config.file=/etc/promtail/config.yml"
+
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    depends_on:
+      - loki
+
+    networks:
+      - inventory_network
+
+
 # ====================================================
-# VOLUME
+# VOLUMES
 # ====================================================
 volumes:
   inventory_mysql_data:
+  inventory_grafana_data:
+  inventory_loki_data:
 
 
 # ====================================================
