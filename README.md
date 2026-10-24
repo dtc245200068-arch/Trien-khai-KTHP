@@ -62,3 +62,10 @@ inventory-final-exam/
 ├── .env.example             # Mẫu biến môi trường
 ├── .gitignore
 └── README.md
+## 5. Hướng dẫn chạy hệ thống
+
+### Bước 1: Clone source code
+
+```bash
+git clone https://github.com/dtc245200068-arch/Trien-khai-KTHP.git
+cd Trien-khai-KTHP
