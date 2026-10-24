@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+
+  # Prometheus tự giám sát chính nó
+  - job_name: "prometheus"
+    static_configs:
+      - targets:
+          - "localhost:9090"
+
+  # Giám sát website KhoFlow qua Nginx
+  - job_name: "inventory-web"
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "web:8080"
+  # Giám sát container Docker bằng cAdvisor
+  - job_name: "cadvisor"
+    static_configs:
+      - targets:
+          - "cadvisor:8080"
+
+  # Giám sát MySQL
+  - job_name: "mysql"
+    static_configs:
+      - targets:
+          - "mysql-exporter:9104"
